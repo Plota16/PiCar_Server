@@ -15,30 +15,29 @@ advertise_service(server_sock, "AquaPiServer",
                   profiles=[SERIAL_PORT_PROFILE],
                   #                   protocols = [ OBEX_UUID ]
                   )
+print("Waiting for connection on RFCOMM channel %d" % port)
+client_sock, client_info = server_sock.accept()
+print("Accepted connection from ", client_info)
+
 while True:
-    print("Waiting for connection on RFCOMM channel %d" % port)
-
-    client_sock, client_info = server_sock.accept()
-    print("Accepted connection from ", client_info)
-
     try:
         data = client_sock.recv(1024)
         if len(data) == 0: break
-        print("received [%s]" % data)
-        print(data)
-        if data == 'up':
+        #print("received [%s]" % data)
+             
+        if data == b'up':
             print("Go forward")
-        elif data == 'down':
+        elif data == b'down':
             print("Go backward")
-        elif data == 'left':
+        elif data == b'left':
             print("Turn left")
-        elif data == 'right':
+        elif data == b'right':
             print("Turn right")
         else:
             data = 'WTF!'
 
-        client_sock.send(data)
-        print("sending [%s]" % data)
+        #client_sock.send(data)
+        #print("sending [%s]" % data)
 
     except IOError:
         pass
