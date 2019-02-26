@@ -1,48 +1,8 @@
 from bluetooth import *
 from enum import Enum
 import time
-
-class Movment(Enum):
-    forward = "Going forward"
-    stop = "Stopping"
-    backward = "Going backward"
-
-
-class Turning(Enum):
-    left = "Turning left"
-    right = "Turning right"
-    straight = "Going straight"
-
-
-class Lights(Enum):
-    on = "on"
-    off = "off"
-
-
-class Car:
-    def __init__(self):
-        self.movement = Movment.stop
-        self.turning = Turning.straight
-        self.lights = Lights.off
-
-    def turn_right(self):
-        self.turning = Turning.right
-
-    def turn_left(self):
-        self.turning = Turning.left
-
-    def go_straight(self):
-        self.turning = Turning.straight
-
-    def go_forward(self):
-        self.movement = Movment.forward
-
-    def go_backward(self):
-        self.movement = Movment.backward
-
-    def stop(self):
-        self.movement = Movment.stop
-
+from Car import *
+from Enums import *
 
 
 server_sock = BluetoothSocket(RFCOMM)
@@ -63,12 +23,13 @@ advertise_service(server_sock, "AquaPiServer",
 print("waiting for connection on RFCOMM channel %d" % port)
 client_sock, client_info = server_sock.accept()
 print("Accepted connection from ", client_info)
-client_sock.setblocking(0)
+#client_sock.setblocking(0)
+client_sock.settimeout(0.1)
 car = Car()
 
 while True:
 
-    print(car.movement.value + " " + car.turning.value)
+    print(car.movement.value + " " + car.turning.value + " " + car.lights.value)
     time.sleep(0.1)
 
     try:
@@ -88,6 +49,10 @@ while True:
             car.turn_right()
         elif data == b'straight':
             car.go_straight()
+        elif data == b'lights_up':
+            car.lights_on()
+        elif data == b'lights_down':
+            car.lights_off()
         else:
             data = 'WTF!'
             print("WTF")
